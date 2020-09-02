@@ -16,9 +16,29 @@ module.exports = app => {
         .get(admin(app.api.user.getById))
         .delete(admin(app.api.user.remove))
 
+    app.route('user/:id/articles')
+        .all(app.config.passport.authenticate())
+        .get(app.api.article.get)
+        // .get(app.api.article.getByUser)
+        
+    // app.route('user/:id/articles')
+    //     .all(app.config.passport.authenticate())
+    //     // .get(admin(app.api.article.get))
+    //     .get(app.api.article.getByUser) //temporario
+    //     // .post(admin(app.api.article.save))
+    //     .post(app.api.article.save)
+
+    // app.route('user/:id/article/:id')
+    //     .all(app.config.passport.authenticate())
+    //     .get(app.api.article.getByUserById)
+    //     // .put(admin(app.api.article.save))
+    //     .put(app.api.article.save) //temporario
+    //     .delete(admin(app.api.article.remove))
+
     app.route('/categories')
         .all(app.config.passport.authenticate())
-        .get(admin(app.api.category.get))
+        // .get(admin(app.api.category.get))
+        .get(app.api.category.get)
         .post(admin(app.api.category.save))
 
     // Cuidado com ordem! Tem que vir antes de /categories/:id
@@ -34,14 +54,44 @@ module.exports = app => {
 
     app.route('/articles')
         .all(app.config.passport.authenticate())
-        .get(admin(app.api.article.get))
-        .post(admin(app.api.article.save))
+        // .get(admin(app.api.article.get))
+        // .get(app.api.article.get) //temporario
+        .get(app.api.article.get)
+        // .post(admin(app.api.article.save))
+        .post(app.api.article.save)
+
+    // app.route('user/:id/articles')
+    //     .get(app.api.article.getByUser)
 
     app.route('/articles/:id')
         .all(app.config.passport.authenticate())
         .get(app.api.article.getById)
-        .put(admin(app.api.article.save))
+        // .get(app.api.article.getByUser)
+        // .put(admin(app.api.article.save))
+        .put(app.api.article.save) //temporario
         .delete(admin(app.api.article.remove))
+
+    app.route('/user/:id/articles')
+        .all(app.config.passport.authenticate())
+        // .get(app.api.article.getById)
+        .get(app.api.article.getByUser)
+        // .put(admin(app.api.article.save))
+        // .put(app.api.article.save) //temporario
+        // .delete(admin(app.api.article.remove))
+
+    // app.route('user/:id/articles')
+    //     .all(app.config.passport.authenticate())
+    //     // .get(admin(app.api.article.get))
+    //     .get(app.api.article.get) //temporario
+    //     // .post(admin(app.api.article.save))
+    //     .post(app.api.article.save)
+
+    // app.route('user/:id/articles/:id')
+    //     .all(app.config.passport.authenticate())
+    //     .get(app.api.article.getById)
+    //     // .put(admin(app.api.article.save))
+    //     .put(app.api.article.save) //temporario
+    //     .delete(admin(app.api.article.remove))
 
     app.route('/categories/:id/articles')
         .all(app.config.passport.authenticate())

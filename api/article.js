@@ -70,6 +70,14 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
+    const getByUser = async (req, res) => {
+        app.db('articles')
+            .select('id', 'name', 'description')
+            .where({ userId: req.params.id })
+            .then(articles => res.json(articles))
+            .catch(err => res.status(500).send(err))
+    }
+
     const getById = (req, res) => {
         app.db('articles')
             .where({ id: req.params.id })
@@ -97,5 +105,5 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    return { save, remove, get, getById, getByCategory }
+    return { save, remove, get, getByUser, getById, getByCategory }
 }
