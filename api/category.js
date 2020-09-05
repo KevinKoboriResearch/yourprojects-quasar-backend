@@ -108,6 +108,48 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
+    // const toTree = (categories, tree) => {
+    //     if(!tree) tree = categories.filter(c => !c.parentId)
+    //     tree = tree.map(parentNode => {
+    //         const isChild = node => node.parentId == parentNode.id
+    //         const articles = app.db('articles')
+    //         .where({ categoryId: parentNode.id })
+    //         .then(articles => articles)
+    //         .catch(err => err)
+    //         // const articles 
+    //         if(articles != null) {
+    //             for (var i = 0; i < articles.length; i++) {
+    //                 parentNode.children = articles[i].name
+    //             }
+    //         }
+    //         parentNode.children = toTree(categories, categories.filter(isChild))
+    //         return parentNode
+    //     })
+    //     return tree
+    // }
+
+    // const toTree = (categories, tree) => {
+    //     if(!tree) tree = categories.filter(c => !c.parentId)
+    //     tree = tree.map(parentNode => {
+    //         const isChild = node => node.parentId == parentNode.id
+
+    //         // const articlesByCategory = await app.db('articles')
+    //         // .where({ categoryId: 4 }).first()
+    //         const articlesByCategory = app.db('categories')
+    //                 .where({ parentId: node.parentId }).first()
+    //         // if(articlesByCategory != null) {
+    //             // for (var i = 0; i < articlesByCategory.length; i++) {
+    //             //     parentNode.children = articlesByCategory[i].name
+    //             // }
+    //         // }
+    //         // parentNode.children = 'oi'
+    //         // parentNode.children = toTree(categories, categories.filter(isChild))
+    //         parentNode.children = articlesByCategory[0].name
+    //         return parentNode
+    //     })
+    //     return tree
+    // }
+
     const toTree = (categories, tree) => {
         if(!tree) tree = categories.filter(c => !c.parentId)
         tree = tree.map(parentNode => {

@@ -12,15 +12,22 @@ module.exports = app => {
 
     app.route('/users/:id')
         .all(app.config.passport.authenticate())
-        .put(admin(app.api.user.save))
-        .get(admin(app.api.user.getById))
-        .delete(admin(app.api.user.remove))
+        .put(app.api.user.saveById)
+        .get(app.api.user.getById)
+        .delete(app.api.user.removeById) // verificar se é o usuario logado
 
-    app.route('user/:id/articles')
+    app.route('/user/:id/articles')
         .all(app.config.passport.authenticate())
-        .get(app.api.article.get)
-        // .get(app.api.article.getByUser)
-        
+        .get(app.api.article.getByUser)
+
+    app.route('/user/:id/upload-image')
+        // .all(app.config.passport.authenticate())
+        .post(app.api.user.saveByIdImage)
+    // app.route('user/:id/articles')
+    //     .all(app.config.passport.authenticate())
+    //     .get(app.api.article.get)
+    // .get(app.api.article.getByUser)
+
     // app.route('user/:id/articles')
     //     .all(app.config.passport.authenticate())
     //     // .get(admin(app.api.article.get))
@@ -69,15 +76,15 @@ module.exports = app => {
         // .get(app.api.article.getByUser)
         // .put(admin(app.api.article.save))
         .put(app.api.article.save) //temporario
-        .delete(admin(app.api.article.remove))
+        .delete(app.api.article.remove)
 
-    app.route('/user/:id/articles')
-        .all(app.config.passport.authenticate())
-        // .get(app.api.article.getById)
-        .get(app.api.article.getByUser)
-        // .put(admin(app.api.article.save))
-        // .put(app.api.article.save) //temporario
-        // .delete(admin(app.api.article.remove))
+    // app.route('/user/:id/articles')
+    //     .all(app.config.passport.authenticate())
+    //     // .get(app.api.article.getById)
+    //     .get(app.api.article.getByUser)
+    // .put(admin(app.api.article.save))
+    // .put(app.api.article.save) //temporario
+    // .delete(admin(app.api.article.remove))
 
     // app.route('user/:id/articles')
     //     .all(app.config.passport.authenticate())

@@ -48,7 +48,7 @@ module.exports = app => {
         }
     }
 
-    const limit = 5 // usado para paginação
+    const limit = 6 // usado para paginação
     // const get = async (req, res) => {
     //     const page = req.query.page || 1
 
@@ -95,9 +95,10 @@ module.exports = app => {
         const categories = await app.db.raw(queries.categoryWithChildren, categoryId)
         const ids = categories.rows.map(c => c.id)
 
-        app.db({a: 'articles', u: 'users'})
-            .select('a.id', 'a.name', 'a.description', 'a.imageUrl', { author: 'u.name' })
+        app.db({a: 'articles', u: 'users', c: 'categories'})
+            .select('a.id', 'a.name', 'a.description', 'a.imageUrl', 'a.categoryId', { categoryName: 'c.name' }, { author: 'u.name' })
             .limit(limit).offset(page * limit - limit)
+            .whereRaw('?? = ??', ['c.id', 'a.categoryId'])
             .whereRaw('?? = ??', ['u.id', 'a.userId'])
             .whereIn('categoryId', ids)
             .orderBy('a.id', 'desc')
