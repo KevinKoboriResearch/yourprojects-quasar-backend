@@ -5,7 +5,7 @@ module.exports = app => {
 
     const save = (req, res) => {
         const article = { ...req.body }
-        if(req.params.id) article.id = req.params.id
+        if (req.params.id) article.id = req.params.id
 
         try {
             existsOrError(article.name, 'Nome não informado')
@@ -13,11 +13,12 @@ module.exports = app => {
             existsOrError(article.categoryId, 'Categoria não informada')
             existsOrError(article.userId, 'Autor não informado')
             existsOrError(article.content, 'Conteúdo não informado')
-        } catch(msg) {
+        } catch (msg) {
             res.status(400).send(msg)
+            return
         }
 
-        if(article.id) {
+        if (article.id) {
             app.db('articles')
                 .update(article)
                 .where({ id: article.id })
@@ -35,15 +36,15 @@ module.exports = app => {
         try {
             const rowsDeleted = await app.db('articles')
                 .where({ id: req.params.id }).del()
-            
+
             try {
                 existsOrError(rowsDeleted, 'Artigo não foi encontrado.')
-            } catch(msg) {
-                return res.status(400).send(msg)    
+            } catch (msg) {
+                return res.status(400).send(msg)
             }
 
             res.status(204).send()
-        } catch(msg) {
+        } catch (msg) {
             res.status(500).send(msg)
         }
     }
@@ -65,14 +66,14 @@ module.exports = app => {
     const get = async (req, res) => {
 
         app.db('articles')
-            .select('id', 'name', 'description')
+            .select('id', 'name', 'description', 'categoryId')
             .then(articles => res.json(articles))
             .catch(err => res.status(500).send(err))
     }
 
     const getByUser = async (req, res) => {
         app.db('articles')
-            .select('id', 'name', 'description')
+            .select('id', 'name', 'description', 'categoryId')
             .where({ userId: req.params.id })
             .then(articles => res.json(articles))
             .catch(err => res.status(500).send(err))
@@ -95,7 +96,7 @@ module.exports = app => {
         const categories = await app.db.raw(queries.categoryWithChildren, categoryId)
         const ids = categories.rows.map(c => c.id)
 
-        app.db({a: 'articles', u: 'users', c: 'categories'})
+        app.db({ a: 'articles', u: 'users', c: 'categories' })
             .select('a.id', 'a.name', 'a.description', 'a.imageUrl', 'a.categoryId', { categoryName: 'c.name' }, { author: 'u.name' })
             .limit(limit).offset(page * limit - limit)
             .whereRaw('?? = ??', ['c.id', 'a.categoryId'])
