@@ -72,6 +72,7 @@ module.exports = app => {
     }
 
     const getByUser = async (req, res) => {
+        // console.log(req.params.id)
         app.db('articles')
             .select('id', 'name', 'description', 'categoryId')
             .where({ userId: req.params.id })

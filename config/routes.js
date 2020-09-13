@@ -16,17 +16,21 @@ module.exports = app => {
         .get(app.api.user.getById)
         .delete(app.api.user.removeById) // verificar se é o usuario logado
 
-    app.route('/user/:id/articles')
-        .all(app.config.passport.authenticate())
-        .get(app.api.article.getByUser)
-
     app.route('/user/:id/upload-image')
-        // .all(app.config.passport.authenticate())
+        .all(app.config.passport.authenticate())
         .post(app.api.user.saveByIdImage)
     // app.route('user/:id/articles')
     //     .all(app.config.passport.authenticate())
     //     .get(app.api.article.get)
     // .get(app.api.article.getByUser)
+
+    app.route('/user/:id/articles')
+        .all(app.config.passport.authenticate())
+        .get(app.api.article.getByUser)
+
+    app.route('/user/:id/categories')
+        .all(app.config.passport.authenticate())
+        .get(app.api.category.getByUser)
 
     // app.route('user/:id/articles')
     //     .all(app.config.passport.authenticate())
@@ -46,12 +50,19 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         // .get(admin(app.api.category.get))
         .get(app.api.category.get)
+        // .put(admin(app.api.category.save))
         .post(admin(app.api.category.save))
 
     // Cuidado com ordem! Tem que vir antes de /categories/:id
     app.route('/categories/tree')
         .all(app.config.passport.authenticate())
         .get(app.api.category.getTree)
+
+    app.route('/category/name/:id')
+        .all(app.config.passport.authenticate())
+        // .get(app.api.category.getById)
+        .put(admin(app.api.category.saveName))
+    // .delete(admin(app.api.category.remove))
 
     app.route('/categories/:id')
         .all(app.config.passport.authenticate())
