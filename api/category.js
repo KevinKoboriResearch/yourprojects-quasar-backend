@@ -1,36 +1,145 @@
 module.exports = app => {
     const { existsOrError, notExistsOrError } = app.api.validation
 
-    // const save = async (req, res) => {
+    const save = async (req, res) => {
+        const category = {
+            id: req.body.id,
+            name: req.body.name,
+            parentId: req.body.parentId,
+            userId: req.body.userId
+        }
+        console.log(category)
+        if (req.params.id) category.id = req.params.id
+
+        try {
+            existsOrError(category.name, 'Nome não informado')
+            existsOrError(category.userId, 'usuario não informado')
+
+            if (category.parentId != null) {
+                const categoryFromDB = await app.db('categories')
+                    .where({ name: category.name, parentId: category.parentId }).first()
+                // if (!category.id) {
+                // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                // } else if () {
+
+                // }
+            } else {
+                const categoryFromDB = await app.db('categories')
+                    .where({ name: category.name, parentId: null }).first()
+                // if (!category.id) {
+                // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                // } else if () {
+
+                // }  
+            }
+
+        } catch (msg) {
+            return res.status(400).send(msg)
+        }
+
+        if (category.id) {
+            app.db('categories')
+                .update(category)
+                .where({ id: category.id })
+                .then(_ => res.status(204).send())
+                .catch(err => res.status(500).send(err))
+        } else {
+            app.db('categories')
+                .insert(category)
+                .then(_ => res.status(204).send())
+                .catch(err => res.status(500).send(err))
+        }
+    }
+
+    // const saveName = async (req, res) => {
     //     const category = {
     //         id: req.body.id,
     //         name: req.body.name,
-    //         parentId: req.body.parentId
+    //         parentId: req.body.parentId,
+    //         userId: req.body.userId
+    //     }
+    //     console.log(category)
+    //     const existany = await app.db('categories')
+
+    //     if (category.id != undefined && category.parentId == undefined && existany.length >= 1) {
+    //         const cat = await app.db('categories').where({ id: category.id }).first()
+    //         // if (cat.parentId === null) {
+    //         // category.id = cat.id
+    //         // }
+    //         category.parentId = cat.parentId
     //     }
 
-    //     if (req.params.id) category.id = req.params.id
+    //     // try {
+    //     //     existsOrError(category.name, 'Nome não informado')
 
+    //     //     if (category.parentId != null) {
+    //     //         const categoryFromDB = await app.db('categories')
+    //     //             .where({ name: category.name, parentId: category.parentId }).first()
+    //     //         // console.log('1')
+    //     //         // if (category.id) {
+    //     //         notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+    //     //         // console.log('3')
+    //     //         // }
+    //     //         // console.log('5')
+    //     //     } else {
+    //     //         const categoryFromDB = await app.db('categories')
+    //     //             .where({ name: category.name }).first()
+    //     //         // console.log('2: ' + category.name)
+    //     //         // if (category.id) {
+    //     //         notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+    //     //         // console.log('4')
+    //     //         // }
+    //     //         // console.log('6')
+    //     //     }
+    //     //     // }
+
+    //     // } catch (msg) {
+    //     //     return res.status(400).send(msg)
+    //     // }
+
+    //     // console.log(category)
+    //     // if (category.id) {
+    //     //     app.db('categories')
+    //     //         .update(category)
+    //     //         .where({ id: category.id })
+    //     //         .then(_ => res.status(204).send())
+    //     //         .catch(err => res.status(500).send(err))
+    //     // } else {
+    //     //     app.db('categories')
+    //     //         .insert(category)
+    //     //         .then(_ => res.status(204).send())
+    //     //         .catch(err => res.status(500).send(err))
+    //     // }
     //     try {
     //         existsOrError(category.name, 'Nome não informado')
+    //         existsOrError(category.userId, 'usuario não informado')
 
     //         if (category.parentId != null) {
+    //             // console.log(category)
     //             const categoryFromDB = await app.db('categories')
     //                 .where({ name: category.name, parentId: category.parentId }).first()
     //             if (!category.id) {
     //                 notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
     //             }
     //         } else {
+    //             // console.log(category.parentId)
     //             const categoryFromDB = await app.db('categories')
     //                 .where({ name: category.name }).first()
-    //             if (!category.id) {
-    //                 notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-    //             }
+    //             console.log(categoryFromDB.parentId)
+    //             // if (!category.id) {
+    //             // notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+    //             // }
+    //             // if (categoryFromDB.parentId == category.parentId && existany.length > 1) {
+    //             //     throw 'Nome da categoria já existe nesse nó'
+    //             // }
     //         }
 
     //     } catch (msg) {
     //         return res.status(400).send(msg)
     //     }
-
+    //     console.log(category)
     //     if (category.id) {
     //         app.db('categories')
     //             .update(category)
@@ -44,145 +153,6 @@ module.exports = app => {
     //             .catch(err => res.status(500).send(err))
     //     }
     // }
-
-    const save = async (req, res) => {
-        const category = {
-            id: req.body.id,
-            name: req.body.name,
-            parentId: req.body.parentId,
-            userId: req.body.userId
-        }
-
-        // if (req.params.id) category.id = req.params.id
-
-        try {
-            existsOrError(category.name, 'Nome não informado')
-
-            if (category.parentId != null) {
-                const categoryFromDB = await app.db('categories')
-                    .where({ name: category.name, parentId: category.parentId }).first()
-                if (!category.id) {
-                    notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                }
-            } else {
-                const categoryFromDB = await app.db('categories')
-                    .where({ name: category.name }).first()
-                if (!category.id) {
-                    notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                }
-            }
-
-        } catch (msg) {
-            return res.status(400).send(msg)
-        }
-
-        if (category.id) {
-            app.db('categories')
-                .update(category)
-                .where({ id: category.id })
-                .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(err))
-        } else {
-            app.db('categories')
-                .insert(category)
-                .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(err))
-        }
-    }
-
-    const saveName = async (req, res) => {
-        const category = {
-            id: req.body.id,
-            name: req.body.name,
-            parentId: req.body.parentId,
-            userId: req.body.userId
-        }
-        const existany = await app.db('categories')
-
-        if (category.id != undefined && category.parentId == undefined && existany.length >= 1) {
-            const cat = await app.db('categories').where({ id: category.id }).first()
-            // if (cat.parentId === null) {
-            category.id = cat.id
-            // }
-            category.parentId = cat.parentId
-        }
-
-        // try {
-        //     existsOrError(category.name, 'Nome não informado')
-
-        //     if (category.parentId != null) {
-        //         const categoryFromDB = await app.db('categories')
-        //             .where({ name: category.name, parentId: category.parentId }).first()
-        //         // console.log('1')
-        //         // if (category.id) {
-        //         notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-        //         // console.log('3')
-        //         // }
-        //         // console.log('5')
-        //     } else {
-        //         const categoryFromDB = await app.db('categories')
-        //             .where({ name: category.name }).first()
-        //         // console.log('2: ' + category.name)
-        //         // if (category.id) {
-        //         notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-        //         // console.log('4')
-        //         // }
-        //         // console.log('6')
-        //     }
-        //     // }
-
-        // } catch (msg) {
-        //     return res.status(400).send(msg)
-        // }
-
-        // console.log(category)
-        // if (category.id) {
-        //     app.db('categories')
-        //         .update(category)
-        //         .where({ id: category.id })
-        //         .then(_ => res.status(204).send())
-        //         .catch(err => res.status(500).send(err))
-        // } else {
-        //     app.db('categories')
-        //         .insert(category)
-        //         .then(_ => res.status(204).send())
-        //         .catch(err => res.status(500).send(err))
-        // }
-        try {
-            existsOrError(category.name, 'Nome não informado')
-
-            if (category.parentId != null) {
-                const categoryFromDB = await app.db('categories')
-                    .where({ name: category.name, parentId: category.parentId }).first()
-                if (!category.id) {
-                    notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                }
-            } else {
-                const categoryFromDB = await app.db('categories')
-                    .where({ name: category.name }).first()
-                if (categoryFromDB.parentId == null) {
-                    notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                    // throw 'Nome da categoria já existe nesse nó'
-                }
-            }
-
-        } catch (msg) {
-            return res.status(400).send(msg)
-        }
-
-        if (category.id) {
-            app.db('categories')
-                .update(category)
-                .where({ id: category.id })
-                .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(err))
-        } else {
-            app.db('categories')
-                .insert(category)
-                .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(err))
-        }
-    }
 
     const remove = async (req, res) => {
         try {
@@ -314,5 +284,5 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    return { save, saveName, remove, get, getByUser, getById, getTree }
+    return { save, remove, get, getByUser, getById, getTree }
 }

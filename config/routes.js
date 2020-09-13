@@ -58,11 +58,11 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         .get(app.api.category.getTree)
 
-    app.route('/category/name/:id')
-        .all(app.config.passport.authenticate())
-        // .get(app.api.category.getById)
-        .put(admin(app.api.category.saveName))
-    // .delete(admin(app.api.category.remove))
+    // app.route('/category/name/:id')
+    //     .all(app.config.passport.authenticate())
+    //     // .get(app.api.category.getById)
+    //     .put(admin(app.api.category.saveName))
+    // // .delete(admin(app.api.category.remove))
 
     app.route('/categories/:id')
         .all(app.config.passport.authenticate())
