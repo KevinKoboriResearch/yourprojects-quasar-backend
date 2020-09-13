@@ -282,6 +282,7 @@ module.exports = app => {
         if (!tree) tree = categories.filter(c => !c.parentId)
         tree = tree.map(parentNode => {
             const isChild = node => node.parentId == parentNode.id
+            // parentNode.userId = 1
             parentNode.children = toTree(categories, categories.filter(isChild))
             return parentNode
         })
