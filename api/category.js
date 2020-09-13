@@ -9,22 +9,22 @@ module.exports = app => {
             userId: req.body.userId
         }
         console.log(category)
-        if (req.params.id) category.id = req.params.id
+        // if (req.params.id) category.id = req.params.id
+        // const existany = await app.db('categories')
 
+        if (category.id !== undefined && category.parentId === undefined) { //&& existany.length >= 1
+            const cat = await app.db('categories').where({ id: category.id }).first()
+            // if (cat.parentId === null) {
+            // category.id = cat.id
+            // }
+            category.parentId = cat.parentId
+        }
         try {
             existsOrError(category.name, 'Nome não informado')
             existsOrError(category.userId, 'usuario não informado')
 
-            if (category.parentId != null) {
-                const categoryFromDB = await app.db('categories')
-                    .where({ name: category.name, parentId: category.parentId }).first()
-                // if (!category.id) {
-                // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                // } else if () {
-
-                // }
-            } else {
+            if (category.parentId === null || category.parentId === undefined) {
+                console.log('2')
                 const categoryFromDB = await app.db('categories')
                     .where({ name: category.name, parentId: null }).first()
                 // if (!category.id) {
@@ -33,6 +33,16 @@ module.exports = app => {
                 // } else if () {
 
                 // }  
+            } else {
+                console.log(category.parentId)
+                const categoryFromDB = await app.db('categories')
+                    .where({ name: category.name, parentId: category.parentId }).first()
+                // if (!category.id) {
+                // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                // } else if () {
+
+                // }
             }
 
         } catch (msg) {
