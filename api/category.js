@@ -2,21 +2,48 @@ module.exports = app => {
     const { existsOrError, notExistsOrError } = app.api.validation
 
     const save = async (req, res) => {
-        const category = {
+        let category = {
             id: req.body.id,
             name: req.body.name,
             parentId: req.body.parentId,
             userId: req.body.userId
         }
-        console.log(category)
-        // if (req.params.id) category.id = req.params.id
-        // const existany = await app.db('categories')
+        // console.log(category)
 
-        if (category.id !== undefined && category.parentId === undefined) { //&& existany.length >= 1
+        const userFromDB = await app.db('users').where({ id: req.body.userId }).first()
+
+
+        if (!userFromDB.admin) {
+            if (req.body.id != null || req.body.id != undefined) {
+                let category2 = await app.db('categories').where({ id: req.body.id, userId: req.body.userId }).first()
+                category.parentId = category2.parentId
+            }
+            // console.log(category.name)
+            if (category.parentId == null) {
+                let existSameNameRoot = await app.db('categories').where({ name: category.name, parentId: null }).first()
+
+                try {
+                    notExistsOrError(existSameNameRoot, 'Nome já existe')
+                } catch (msg) {
+                    return res.status(400).send(msg)
+                }
+
+                let existOneNotAdmin = await app.db('categories').where({ userId: category.userId, parentId: null }).first()
+                // console.log(existOneNotAdmin)
+                if (existOneNotAdmin) {
+                    if (category.id != existOneNotAdmin.id) {
+                        try {
+                            notExistsOrError(existOneNotAdmin, 'Você só pode criar um Nó Raiz')
+                        } catch (msg) {
+                            return res.status(400).send(msg)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (category.id !== undefined && category.parentId === undefined) {
             const cat = await app.db('categories').where({ id: category.id }).first()
-            // if (cat.parentId === null) {
-            // category.id = cat.id
-            // }
             category.parentId = cat.parentId
         }
         try {
@@ -27,19 +54,14 @@ module.exports = app => {
                 console.log('2')
                 const categoryFromDB = await app.db('categories')
                     .where({ name: category.name, parentId: null }).first()
-                // if (!category.id) {
-                // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                // } else if () {
-
-                // }  
+                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó 1')
             } else {
                 console.log(category.parentId)
                 const categoryFromDB = await app.db('categories')
                     .where({ name: category.name, parentId: category.parentId }).first()
                 // if (!category.id) {
                 // existsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
-                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó')
+                notExistsOrError(categoryFromDB, 'Nome da categoria já existe nesse nó 2')
                 // } else if () {
 
                 // }
@@ -61,6 +83,7 @@ module.exports = app => {
                 .then(_ => res.status(204).send())
                 .catch(err => res.status(500).send(err))
         }
+        // }
     }
 
     // const saveName = async (req, res) => {
@@ -295,5 +318,12 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    return { save, remove, get, getByUser, getById, getTree }
+    const getTreeByUser = (req, res) => {
+        app.db('categories')
+            .where({ userId: req.params.id })
+            .then(categories => res.json(toTree(categories)))
+            .catch(err => res.status(500).send(err))
+    }
+
+    return { save, remove, get, getByUser, getById, getTree, getTreeByUser }
 }

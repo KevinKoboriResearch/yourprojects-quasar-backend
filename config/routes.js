@@ -24,28 +24,30 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         .get(app.api.article.getByUser)
 
-    // app.route('/user/:id/categories')
-    //     .all(app.config.passport.authenticate())
-    //     .get(app.api.category.getByUser)
+    app.route('/user/:id/categories')
+        .all(app.config.passport.authenticate())
+        .get(app.api.category.getByUser)
+
+    app.route('/user/:id/categories/tree')
+        .all(app.config.passport.authenticate())
+        .get(app.api.category.getTreeByUser)
 
     app.route('/categories')
         .all(app.config.passport.authenticate())
         .get(app.api.category.get)
-        .post(admin(app.api.category.save))
+        // .post(admin(app.api.category.save))
+        .post(app.api.category.save)
 
     app.route('/categories/tree')
         .get(app.api.category.getTree)
 
     app.route('/categories/:id')
         .get(app.api.category.getById)
-        .all(app.config.passport.authenticate())
-        .put(admin(app.api.category.save))
-        .delete(admin(app.api.category.remove))
-
-    // app.route('/categories/:id')
-    //     .all(app.config.passport.authenticate())
-    //     .put(admin(app.api.category.save))
-    //     .delete(admin(app.api.category.remove))
+        // .all(app.config.passport.authenticate())
+        .put(app.api.category.save)
+        .delete(app.api.category.remove)
+    // .put(admin(app.api.category.save))
+    // .delete(admin(app.api.category.remove))
 
     app.route('/articles')
         .all(app.config.passport.authenticate())
@@ -54,14 +56,9 @@ module.exports = app => {
 
     app.route('/articles/:id')
         .get(app.api.article.getById)
-        .all(app.config.passport.authenticate())
+        // .all(app.config.passport.authenticate())
         .put(app.api.article.save) //temporario
         .delete(app.api.article.remove)
-
-    // app.route('/articles/:id')
-    //     .all(app.config.passport.authenticate())
-    //     .put(app.api.article.save) //temporario
-    //     .delete(app.api.article.remove)
 
     app.route('/categories/:id/articles')
         .get(app.api.article.getByCategory)
