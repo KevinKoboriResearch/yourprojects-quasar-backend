@@ -50,7 +50,7 @@ module.exports = app => {
     // .delete(admin(app.api.category.remove))
 
     app.route('/articles')
-        .all(app.config.passport.authenticate())
+        // .all(app.config.passport.authenticate())
         .get(app.api.article.get)
         .post(app.api.article.save)
 

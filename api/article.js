@@ -57,16 +57,25 @@ module.exports = app => {
     //     const count = parseInt(result.count)
 
     //     app.db('articles')
-    //         .select('id', 'name', 'description')
+    //         .select('id', 'name', 'description', 'categoryId')
     //         .limit(limit).offset(page * limit - limit)
     //         .then(articles => res.json({ data: articles, count, limit }))
     //         .catch(err => res.status(500).send(err))
     // }
 
     const get = async (req, res) => {
+        // const categoryId = req.params.id
+        const page = req.query.page || 1
+        // const categories = await app.db.raw(queries.categoryWithChildren, categoryId)
+        // const ids = categories.rows.map(c => c.id)
 
-        app.db('articles')
-            .select('id', 'name', 'description', 'categoryId')
+        app.db({ a: 'articles', u: 'users', c: 'categories' })
+            .select('a.id', 'a.name', 'a.description', 'a.imageUrl', 'a.categoryId', { categoryName: 'c.name' }, { author: 'u.name' })
+            .limit(limit).offset(page * limit - limit)
+            .whereRaw('?? = ??', ['c.id', 'a.categoryId'])
+            .whereRaw('?? = ??', ['u.id', 'a.userId'])
+            // .whereIn('categoryId', ids)
+            .orderBy('a.id', 'desc')
             .then(articles => res.json(articles))
             .catch(err => res.status(500).send(err))
     }
