@@ -83,7 +83,7 @@ module.exports = app => {
     const getByUser = async (req, res) => {
         // console.log(req.params.id)
         app.db('articles')
-            .select('id', 'name', 'description', 'categoryId')
+            .select('id', 'name', 'description')
             .where({ userId: req.params.id })
             .then(articles => res.json(articles))
             .catch(err => res.status(500).send(err))
@@ -107,6 +107,7 @@ module.exports = app => {
         const ids = categories.rows.map(c => c.id)
 
         app.db({ a: 'articles', u: 'users', c: 'categories' })
+            // .select('a.id', 'a.name', 'a.description', { categoryName: 'c.name' }, { author: 'u.name' })
             .select('a.id', 'a.name', 'a.description', 'a.imageUrl', 'a.categoryId', { categoryName: 'c.name' }, { author: 'u.name' })
             .limit(limit).offset(page * limit - limit)
             .whereRaw('?? = ??', ['c.id', 'a.categoryId'])
